@@ -25,6 +25,11 @@ from utils.videos import save_data
 console = Console()
 
 
+def sanitize_filename(title):
+    # Remove invalid Windows filename characters and trailing whitespace
+    return re.sub(r'[\\/:*?"<>|]', '', title).strip()
+
+
 class ProgressFfmpeg(threading.Thread):
     def __init__(self, vid_duration_seconds, progress_update_callback):
         threading.Thread.__init__(self, name="ProgressFfmpeg")
@@ -347,7 +352,7 @@ def make_final_video(
     idx = re.sub(r"[^\w\s-]", "", reddit_obj["thread_id"])
     title_thumb = reddit_obj["thread_title"]
 
-    filename = f"{name_normalize(title)[:251]}"
+    filename = sanitize_filename(name_normalize(title)[:251])
     subreddit = settings.config["reddit"]["thread"]["subreddit"]
 
     if not exists(f"./results/{subreddit}"):
